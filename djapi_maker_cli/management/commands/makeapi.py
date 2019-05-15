@@ -5,7 +5,7 @@ import os, re
 from io import StringIO
 from django.conf import settings
 from django.core import management
-#from django.core.management.commands import inspectdb
+from django.template.loader import render_to_string, get_template
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -192,7 +192,8 @@ class Command(BaseCommand):
             for db_name in db_names:
                 views_content += "        app = {\n"
                 views_content += "            'app_name': '{0}',\n".format(db_name)
-                views_content += "            'url': '/api/{0}'\n".format(db_name) #reverse url this when I'm not so tired
+                #views_content += "            'url': '/api/{0}'\n".format(db_name) #reverse url this when I'm not so tired
+                views_content += "            'url': reverse('{0}_link_view',  request=request)
                 views_content += "        }\n"
                 views_content += "        app_list.append(app)\n"
             views_content += "        return Response(app_list)\n"
@@ -227,63 +228,8 @@ class Command(BaseCommand):
             print(f"Created API urls file: {self.api_urls_path}")
 
     def display_install_instructions(self, db_names):
-        print("")
-        print("API Code generated Successfully!")
-        print("*** However, you still need to add the apps and url routes to your project! ****")
-        print("Here's what you need to do:")
-        print("Step 1) Add new apps to Django's INSTALLED_APPS array.")
-        print("  In your project's settings.py file, there should be something that looks like this:")
-        print("")
-        print("    INSTALLED_APPS = [")
-        print("        'rest_framework',")
-        print("        'django.contrib.admin',")
-        print("        'django.contrib.auth',")
-        print("        'django.contrib.contenttypes',")
-        print("        'django.contrib.sessions',")
-        print("        'django.contrib.messages',")
-        print("        'django.contrib.staticfiles',")
-        print("    ]")
-        print("")
-        print("  You need to add {0} to this list, like so:".format(", ".join(db_names)))
-        print("")
-        print("    INSTALLED_APPS = [")
-        for db_name in db_names:
-            print("        '{0}',".format(db_name))
-        print("        'rest_framework',")
-        print("        'django.contrib.admin',")
-        print("        'django.contrib.auth',")
-        print("        'django.contrib.contenttypes',")
-        print("        'django.contrib.sessions',")
-        print("        'django.contrib.messages',")
-        print("        'django.contrib.staticfiles',")
-        print("    ]")
-        print("")
-        print("Step 2) Add new routers to Django's DATABASE_ROUTERS tuple.")
-        print("  Also in your project's settings.py file, you need to add a DATABASE_ROUTERS setting like so:")
-        print("")
-        print("    DATABASE_ROUTERS = (")
-        for db_name in db_names:
-            print("        '{0}.router.Router',".format(db_name))
-        print("    )")
-        print("")
-        print("Step 3) Add API URLs to your project's main urls.py file.")
-        print("  Your project's urls.py file should have something that looks like this:")
-        print("")
-        print("    urlpatterns = [")
-        print("        path('admin/', admin.site.urls),")
-        print("    ]")
-        print("")
-        print("  The API maker has created an \"api\" directory with a urls.py file in it with generated api urls.")
-        print("  You need to include the \"api/urls.py\" in your project's urls.py file, like so: ")
-        print("")
-        print("    urlpatterns = [")
-        print("        path('api/', include('api.urls'), name='api_urls'),")
-        print("        path('admin/', admin.site.urls),")
-        print("    ]")
-        print("")
-        print("Got to http://yourserver.name/api to view your api.")
-        print("Enjoy!")
-        print("")
+        install_instructions = render_to_string("install_instructions.txt", {'db_names': db_names})
+        print(install_instructions)
 
     def handle(self, *args, **options):
         dbs = settings.DATABASES
