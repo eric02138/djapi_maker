@@ -96,10 +96,9 @@ class Command(BaseCommand):
     def make_routers(self, db_name):
         self.router_path = os.path.join(self.target_dir, "router.py")
         with open(self.router_path, 'w') as f:
-            class_names_string = [ str(class_name) for class_name in class_names ]
+            class_list_string = [ class_name for class_name in self.class_names ]
             router_content = render_to_string('make_routers.txt', {'db_name': db_name,
-                                                                   'class_names': self.class_names,
-                                                                   'class_names_string': class_names_string})
+                                                                   'class_names': self.class_names})
             f.write(router_content)
             print(f"Created db router file: {self.router_path}")
 

@@ -1,0 +1,14 @@
+{% for class_name in class_names %}from {{db_name}}.models import {{class_name}}
+{% endfor %}
+
+class Router(object):
+    def db_for_read(self, model, **hints):
+        if model.__name__ in {{ class_names|safe }}:
+            return '{{db_name}}'
+        return None
+
+    def db_for_write(self, model, **hints):
+        if model.__name__ in {{ class_names|safe }}:
+            return '{{db_name}}'
+        return None
+

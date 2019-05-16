@@ -1,0 +1,16 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
+class AppList(APIView):
+    def get(self, request, format=None):
+        app_list = []
+{% for db_name in db_names %}
+        app = {
+            'app_name': '{{db_name}}',
+            #'url': '/api/{{db_name}}'   #reverse url this when I'm not so tired and dumb
+            'url': reverse('{{db_name}}_list_view',  request=request)
+        }
+        app_list.append(app)
+{% endfor %}
+        return Response(app_list)
