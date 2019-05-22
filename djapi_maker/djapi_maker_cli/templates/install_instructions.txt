@@ -1,0 +1,55 @@
+API Code generated Successfully!
+*** However, you still need to add the apps and url routes to your project! ****
+Here's what you need to do:
+Step 1) Add new apps to Django's INSTALLED_APPS array.
+  In your project's settings.py file, there should be something that looks like this:
+
+    INSTALLED_APPS = [
+        'rest_framework',
+        'djapi_maker_cli',
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+    ]
+
+  You need to add {0} to this list, like so:".format(", ".join(db_names)))
+
+    INSTALLED_APPS = [
+{% for db_name in db_names %}        '{{db_name}}',{% endfor %}
+        'rest_framework',
+        'djapi_maker_cli',
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+    ]
+
+Step 2) Add new routers to Django's DATABASE_ROUTERS tuple.
+  Also in your project's settings.py file, you need to add a DATABASE_ROUTERS setting like so:
+
+    DATABASE_ROUTERS = (
+{% for db_name in db_names %}            '{{db_name}}.router.Router',{% endfor %}
+    )
+
+Step 3) Add API URLs to your project's main urls.py file.
+  Your project's urls.py file should have something that looks like this:
+
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+    ]
+
+  The API maker has created an \"api\" directory with a urls.py file in it with generated api urls.
+  You need to include the \"api/urls.py\" in your project's urls.py file, like so: 
+
+    urlpatterns = [
+        path('api/', include('api.urls'), name='api_urls'),
+        path('admin/', admin.site.urls),
+    ]
+
+Got to http://yourserver.name/api to view your api.
+Enjoy!
