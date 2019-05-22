@@ -1,7 +1,0 @@
-from django.apps import AppConfig
-
-{% for class_name in class_names %}
-class {{class_name}}Config(AppConfig):
-    name = '{{ class_name|lower }}'
-    label = '{{ class_name }} label'
-{% endfor %}
